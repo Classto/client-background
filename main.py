@@ -7,9 +7,10 @@ import requests
 
 class App:
     def __init__(self, user):
+        global url
         self.session_id = user.json()["session_id"]
         self.current_category = user.json()["current_category"]
-        self.meetings = requests.get(f"http://localhost:5000/schedule/{self.session_id}").json()["data"]
+        self.meetings = requests.get(url + "/schedule/" + self.session_id).json()["data"]
 
     async def enter_zoom(self):
         current_time = datetime.now()
@@ -33,12 +34,14 @@ class App:
 
 email = ""
 pwd = ""
+url = ""
 with open('config.json') as config:
     data = json.load(config)
     email = data["email"]
     pwd = data["pwd"]
+    url = data["server_addres"]
 
-user = requests.post("http://localhost:5000/auth/login",json = {"email" : email,"pw" : pwd})
+user = requests.post(url + "/auth/login",json = {"email" : email,"pw" : pwd})
 if not user.status_code == 200:
     print("error: user not found")
 app = App(user)
